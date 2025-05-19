@@ -61,4 +61,13 @@ public class TaskManager {
             System.out.println("❌ Failed to load tasks: " + e.getMessage());
         }
     }
+    public static void showReminders(List<Task> tasks) {
+        System.out.println("🔔 Reminders:");
+        for (Task task : tasks) {
+            if (task.isDueTodayOrOverdue() && !task.isCompleted()) {
+                System.out.println("⚠️ Reminder: '" + task.getName() + "' is due today or overdue!");
+            }
+        }
+    }
+    
 }

@@ -1,7 +1,5 @@
 package mini_projects.SmartDailyPlanner;
 
-import java.util.*;
-
 public class Main {
     public static void main(String[] args) {
         System.out.println("Here's a smart tip for today:");
@@ -12,6 +10,9 @@ public class Main {
 
         // Load tasks from file if available
         TaskManager.loadTasksFromFile(planner.getTasks(), "tasks.json");
+
+        // 🔔 Show reminders after loading tasks
+        TaskManager.showReminders(planner.getTasks());
 
         // Add new tasks (you can modify this as needed)
         planner.addTask(new Task("Do homework", 30, "2025-05-20", "HIGH"));
