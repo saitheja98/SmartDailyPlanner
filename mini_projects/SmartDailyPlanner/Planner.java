@@ -2,51 +2,61 @@ package mini_projects.SmartDailyPlanner;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Planner {
-    private Map<LocalDate, List<Task>> tasksByDate;
+    public enum Priority {
+        HIGH, MEDIUM, LOW
+    }
+
+    private final List<Task> tasks;
 
     public Planner() {
-        tasksByDate = new HashMap<>();
+        this.tasks = new ArrayList<>();
     }
 
     public void addTask(Task task) {
-        LocalDate deadline = task.getDeadline();
-        tasksByDate.computeIfAbsent(deadline, k -> new ArrayList<>()).add(task);
-    }
-
-    public void displayTasksSortedByName() {
-        List<Task> allTasks = getAllTasks();
-        allTasks.sort(Comparator.comparing(Task::getName));
-        System.out.println("\nTasks sorted by name:");
-        allTasks.forEach(System.out::println);
-    }
-
-    public void displayTasksSortedByDuration() {
-        List<Task> allTasks = getAllTasks();
-        allTasks.sort(Comparator.comparingInt(Task::getDuration));
-        System.out.println("\nTasks sorted by duration:");
-        allTasks.forEach(System.out::println);
-    }
-
-    public void displayTasksSortedByPriority() {
-        List<Task> allTasks = getAllTasks();
-        allTasks.sort(Comparator.comparing(Task::getPriority));
-        System.out.println("\nTasks sorted by priority:");
-        allTasks.forEach(System.out::println);
+        tasks.add(task);
     }
 
     public List<Task> getAllTasks() {
-        List<Task> allTasks = new ArrayList<>();
-        tasksByDate.values().forEach(allTasks::addAll);
-        return allTasks;
+        return tasks;
     }
 
-    public Map<LocalDate, List<Task>> getTasksByDate() {
-        return tasksByDate;
+    public void printSummaryReport() {
+        long completed = tasks.stream().filter(Task::isDone).count();
+        long pending = tasks.size() - completed;
+
+        Map<Priority, Long> byPriority = tasks.stream()
+            .collect(Collectors.groupingBy(Task::getPriority, Collectors.counting()));
+
+        System.out.println("📊 Task Summary Report:");
+        System.out.println("--------------------------");
+        System.out.println("Total tasks     : " + tasks.size());
+        System.out.println("✅ Completed     : " + completed);
+        System.out.println("⏳ Pending       : " + pending);
+        System.out.println("🔢 By Priority:");
+        for (Priority p : Priority.values()) {
+            System.out.printf("   • %s: %d%n", p, byPriority.getOrDefault(p, 0L));
+        }
+        System.out.println("--------------------------\n");
     }
 
-    public enum Priority {
-        HIGH, MEDIUM, LOW
+    public void printTasksSortedByName() {
+        tasks.stream()
+            .sorted(Comparator.comparing(Task::getName))
+            .forEach(System.out::println);
+    }
+
+    public void printTasksSortedByDuration() {
+        tasks.stream()
+            .sorted(Comparator.comparingInt(Task::getDuration))
+            .forEach(System.out::println);
+    }
+
+    public void printTasksSortedByPriority() {
+        tasks.stream()
+            .sorted(Comparator.comparing(Task::getPriority))
+            .forEach(System.out::println);
     }
 }

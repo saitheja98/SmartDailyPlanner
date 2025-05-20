@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.List;
 
 public class TaskManager {
     private final Planner planner;
@@ -25,22 +24,18 @@ public class TaskManager {
             JSONArray array = new JSONArray(content);
             for (int i = 0; i < array.length(); i++) {
                 JSONObject obj = array.getJSONObject(i);
-                boolean isDone = obj.has("isDone") ? obj.getBoolean("isDone") : false;
-
                 Task task = new Task(
-                        obj.getString("name"),
-                        obj.getInt("duration"),
-                        LocalDate.parse(obj.getString("deadline")),
-                        Planner.Priority.valueOf(obj.getString("priority")),
-                        isDone
+                    obj.getString("name"),
+                    obj.getInt("duration"),
+                    LocalDate.parse(obj.getString("deadline")),
+                    Planner.Priority.valueOf(obj.getString("priority")),
+                    obj.optBoolean("isDone", false)
                 );
                 planner.addTask(task);
             }
             System.out.println("✅ Tasks loaded from " + filename);
         } catch (IOException e) {
             System.out.println("⚠️ No existing task file found. Starting fresh.");
-        } catch (Exception e) {
-            System.out.println("❌ Failed to load tasks: " + e.getMessage());
         }
     }
 
