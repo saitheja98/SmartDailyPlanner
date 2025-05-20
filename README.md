@@ -1,20 +1,33 @@
-# SmartDailyPlanner 🧠📅
+# SmartDailyPlanner
 
-SmartDailyPlanner is a simple yet powerful Java console application that helps users manage their daily tasks efficiently with smart features like sorting, saving/loading, and motivational tips.
+SmartDailyPlanner is a command-line Java application that helps you manage daily tasks with features like:
 
-## 🚀 Features
+- 🔔 Reminders
+- ⏳ Task Progress Tracking
+- 📊 Summary Reports
+- 📅 Deadline Sorting
+- ✅ Save/Load Tasks as JSON
+- 📌 Prioritization (High/Medium/Low)
 
-- ✅ Add tasks with name, duration, priority, and deadline
-- ✅ Sort tasks by name or duration
-- ✅ Save and load tasks from a `tasks.json` file
-- ✅ Display smart daily motivational tips
-- ✅ Prioritize tasks (HIGH / MEDIUM / LOW)
+## Features
 
-## 🧰 Tech Stack
+- Add, edit, and view tasks
+- Prioritize tasks by deadlines or duration
+- Mark tasks as completed
+- Save/load tasks from `tasks.json`
+- Displays motivational quotes each run
 
-- Java 17+
-- org.json (for JSON handling)
+## Technologies Used
 
-## 📂 Project Structure
+- Java 11+
+- `org.json` library (for reading/writing JSON)
+
+## Setup & Run
+
+Make sure you have Java installed. Then run:
+
+```bash
+./compile.sh
+./run.sh
 
 
