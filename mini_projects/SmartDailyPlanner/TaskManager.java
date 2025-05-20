@@ -4,70 +4,62 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.FileWriter;
-import java.io.FileReader;
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Scanner;
 
 public class TaskManager {
+    private final Planner planner;
 
-    public static void saveTasksToFile(List<Task> tasks, String filename) {
-        JSONArray taskArray = new JSONArray();
-        for (Task task : tasks) {
-            JSONObject obj = new JSONObject();
-            obj.put("name", task.getName());
-            obj.put("duration", task.getDuration());
-            obj.put("completed", task.isCompleted());
-            obj.put("deadline", task.getDeadline().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-            obj.put("priority", task.getPriority().toString());
-            taskArray.put(obj);
-        }
-
-        try (FileWriter file = new FileWriter(filename)) {
-            file.write(taskArray.toString(2));
-            System.out.println("✅ Tasks saved to " + filename);
-        } catch (IOException e) {
-            System.out.println("❌ Failed to save tasks: " + e.getMessage());
-        }
+    public TaskManager(Planner planner) {
+        this.planner = planner;
     }
 
-    public static void loadTasksFromFile(List<Task> tasks, String filename) {
-        try (Scanner reader = new Scanner(new FileReader(filename))) {
-            StringBuilder jsonStr = new StringBuilder();
-            while (reader.hasNextLine()) {
-                jsonStr.append(reader.nextLine());
-            }
+    public void loadTasks(String filename) {
+        try {
+            byte[] bytes = Files.readAllBytes(Paths.get(filename));
+            String content = new String(bytes);
 
-            JSONArray taskArray = new JSONArray(jsonStr.toString());
-            for (int i = 0; i < taskArray.length(); i++) {
-                JSONObject obj = taskArray.getJSONObject(i);
+            JSONArray array = new JSONArray(content);
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject obj = array.getJSONObject(i);
+                boolean isDone = obj.has("isDone") ? obj.getBoolean("isDone") : false;
+
                 Task task = new Task(
-                    obj.getString("name"),
-                    obj.getInt("duration"),
-                    obj.getString("deadline"),
-                    obj.getString("priority")
+                        obj.getString("name"),
+                        obj.getInt("duration"),
+                        LocalDate.parse(obj.getString("deadline")),
+                        Planner.Priority.valueOf(obj.getString("priority")),
+                        isDone
                 );
-
-                if (obj.getBoolean("completed")) {
-                    task.markComplete();
-                }
-
-                tasks.add(task);
+                planner.addTask(task);
             }
-
             System.out.println("✅ Tasks loaded from " + filename);
+        } catch (IOException e) {
+            System.out.println("⚠️ No existing task file found. Starting fresh.");
         } catch (Exception e) {
             System.out.println("❌ Failed to load tasks: " + e.getMessage());
         }
     }
-    public static void showReminders(List<Task> tasks) {
-        System.out.println("🔔 Reminders:");
-        for (Task task : tasks) {
-            if (task.isDueTodayOrOverdue() && !task.isCompleted()) {
-                System.out.println("⚠️ Reminder: '" + task.getName() + "' is due today or overdue!");
+
+    public void saveTasks(String filename) {
+        try (FileWriter writer = new FileWriter(filename)) {
+            JSONArray array = new JSONArray();
+            for (Task task : planner.getAllTasks()) {
+                JSONObject obj = new JSONObject();
+                obj.put("name", task.getName());
+                obj.put("duration", task.getDuration());
+                obj.put("deadline", task.getDeadline().toString());
+                obj.put("priority", task.getPriority().name());
+                obj.put("isDone", task.isDone());
+                array.put(obj);
             }
+            writer.write(array.toString(4));
+            System.out.println("✅ Tasks saved to " + filename);
+        } catch (IOException e) {
+            System.out.println("❌ Failed to save tasks.");
         }
     }
-    
 }

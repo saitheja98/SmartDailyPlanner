@@ -1,54 +1,30 @@
 package mini_projects.SmartDailyPlanner;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 public class Task {
     private String name;
-    private int duration; // in minutes
-    private boolean isCompleted;
+    private int duration;
     private LocalDate deadline;
-    private Priority priority;
+    private Planner.Priority priority;
+    private boolean isDone;
 
-    public Task(String name, int duration, String deadlineStr, String priorityStr) {
+    public Task(String name, int duration, LocalDate deadline, Planner.Priority priority, boolean isDone) {
         this.name = name;
         this.duration = duration;
-        this.isCompleted = false;
-        this.deadline = LocalDate.parse(deadlineStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        this.priority = Priority.valueOf(priorityStr.toUpperCase());
+        this.deadline = deadline;
+        this.priority = priority;
+        this.isDone = isDone;
     }
 
-    public int getDuration() {
-        return duration;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public boolean isCompleted() {
-        return isCompleted;
-    }
-
-    public void markComplete() {
-        this.isCompleted = true;
-    }
-
-    public LocalDate getDeadline() {
-        return deadline;
-    }
-
-    public Priority getPriority() {
-        return priority;
-    }
-
-    // ✅ Add this method here
-    public boolean isDueTodayOrOverdue() {
-        return !deadline.isAfter(LocalDate.now());
-    }
+    public String getName() { return name; }
+    public int getDuration() { return duration; }
+    public LocalDate getDeadline() { return deadline; }
+    public Planner.Priority getPriority() { return priority; }
+    public boolean isDone() { return isDone; }
 
     @Override
     public String toString() {
-        return name + " - " + duration + " min - Due: " + deadline + " - Priority: " + priority + (isCompleted ? " [✔]" : " [ ]");
+        return name + " - " + duration + " min - Due: " + deadline + " - Priority: " + priority + (isDone ? " [✓]" : " [ ]");
     }
 }
